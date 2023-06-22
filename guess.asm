@@ -22,7 +22,7 @@ section .text
 _start:
 call __prompt_1
 call __userInput
-;call __checkInput
+call __checkInput
 ;call __syscall
 
 ;level1
@@ -45,19 +45,17 @@ call __userInput
 	call __syscall
 
 	mov eax, [randint]
-	jmp _modend
+	jmp __easy_level
 
+ ;checks if the number of tries has reached limited
 _modup:
-
 	add eax, maxrand
-	jmp _modend
+	jmp __easy_level
 
 _moddown:
-
 	sub eax, maxrand
 
-
-_modend:
+__easy_level:
 
 	cmp eax, maxrand
 	jg _moddown
@@ -416,6 +414,7 @@ mov ebx,1
 mov ecx,userprompt
 mov edx,userprompt_len
 int 0x80
+ret
 ;
 mov eax,4
 mov ebx,1
@@ -442,9 +441,9 @@ mov ecx,userChoice ;buffer to be stored in userChoice
 mov edx,2
 int 0x80
 
-;__checkInput:
-;cmp byte[userChoice],'1'
-;je __easy_level
+__checkInput:
+cmp byte[userChoice],'1'
+je __easy_level
 ;cmp byte[userChoice],'2'
 ;je __medium_level
 ;cmp byte[userChoice],'3'
@@ -479,7 +478,10 @@ section .data
 	prompt db " tries left. Input number (1-100): ",0xa,0xa
 	prompt_len equ $-prompt
 
-	hello db 0xa, "Welcome to the guessing game!", 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to one hundred.", 0xa, 0xa
+	welcome db "Welcome to the guessing game!", 0xa,0xa
+	welcome_len equ $-ask
+
+	hello db 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to one hundred.", 0xa, 0xa
 	hello_len equ $-hello
 
 	reenter db "? REENTER", 0xa, "Invalid unsigned integer. Please re-enter your input.", 0xa
