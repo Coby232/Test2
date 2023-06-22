@@ -1,6 +1,3 @@
-%macro  nwln  0
-        call    proc_nwln
-%endmacro
 
 SYS_EXIT  equ 1
 SYS_READ  equ 3
@@ -16,17 +13,17 @@ mov eax,4
 mov ebx,1
 mov ecx,userprompt
 mov edx,userprompt_len
-nwln
+;
 mov eax,4
 mov ebx,1
 mov ecx,choice_1
 mov edx,choice_1_len
-nwln
+;
 mov eax,4
 mov ebx,1
 mov ecx,choice_2
 mov edx,choice_2_len
-nwln
+;
 mov eax,4
 mov ebx,1
 mov ecx,choice_3
@@ -40,13 +37,13 @@ mov ecx,userChoice ;buffer to be stored in userChoice
 mov edx,2
 ret
 
-__checkInput:
-cmp byte[userChoice],'1'
-je __easy_level
-cmp byte[userChoice],'2'
-je __medium_level
-cmp byte[userChoice],'3'
-je __hard_level
+;__checkInput:
+;cmp byte[userChoice],'1'
+;je __easy_level
+;cmp byte[userChoice],'2'
+;je __medium_level
+;cmp byte[userChoice],'3'
+;je __hard_level
 
 ;__easy_level:
 
