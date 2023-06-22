@@ -7,35 +7,7 @@ STDOUT    equ 1
 
 section .text
 	
-;take user input
-__prompt_1:
-mov eax,4
-mov ebx,1
-mov ecx,userprompt
-mov edx,userprompt_len
-;
-mov eax,4
-mov ebx,1
-mov ecx,choice_1
-mov edx,choice_1_len
-;
-mov eax,4
-mov ebx,1
-mov ecx,choice_2
-mov edx,choice_2_len
-;
-mov eax,4
-mov ebx,1
-mov ecx,choice_3
-mov edx,choice_3_len
-ret
 
-__userInput:
-mov eax,3 ;syscall_read
-mov ebx,0 ;stdin
-mov ecx,userChoice ;buffer to be stored in userChoice
-mov edx,2
-ret
 
 ;__checkInput:
 ;cmp byte[userChoice],'1'
@@ -443,7 +415,35 @@ __syscall:
 
 	int 0x80 ; Interupt kernel
 	ret
+;take user input
+__prompt_1:
+mov eax,4
+mov ebx,1
+mov ecx,userprompt
+mov edx,userprompt_len
+;
+mov eax,4
+mov ebx,1
+mov ecx,choice_1
+mov edx,choice_1_len
+;
+mov eax,4
+mov ebx,1
+mov ecx,choice_2
+mov edx,choice_2_len
+;
+mov eax,4
+mov ebx,1
+mov ecx,choice_3
+mov edx,choice_3_len
+ret
 
+__userInput:
+mov eax,3 ;syscall_read
+mov ebx,0 ;stdin
+mov ecx,userChoice ;buffer to be stored in userChoice
+mov edx,2
+ret
 
 
 ;define an error loop to check if user input is invalid
