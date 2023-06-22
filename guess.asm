@@ -9,13 +9,60 @@ STDIN     equ 0
 STDOUT    equ 1
 
 section .text
-	global _start
+	
+;take user input
+__prompt_1:
+mov eax,4
+mov ebx,1
+mov ecx,userprompt
+mov edx,userprompt_len
+nwln
+mov eax,4
+mov ebx,1
+mov ecx,choice_1
+mov edx,choice_1_len
+nwln
+mov eax,4
+mov ebx,1
+mov ecx,choice_2
+mov edx,choice_2_len
+nwln
+mov eax,4
+mov ebx,1
+mov ecx,choice_3
+mov edx,choice_3_len
+ret
 
-;_start:
+__userInput:
+mov eax,3 ;syscall_read
+mov ebx,0 ;stdin
+mov ecx,userChoice ;buffer to be stored in userChoice
+mov edx,2
+ret
+
+__checkInput:
+cmp byte[userChoice],'1'
+je __easy_level
+cmp byte[userChoice],'2'
+je __medium_level
+cmp byte[userChoice],'3'
+je __hard_level
+
+;__easy_level:
+
+;
+;__medium_level:
+;
+;__hard_level:
+;
+	global _start
+_start:
 call __prompt_1
+call __userInput
+;call __checkInput
+call __syscall
 
 ;level1
-
 	; Get random number
 	
 	call __open
@@ -73,7 +120,7 @@ _modend:
 _loop:
 
 	; Write prompt
-__easy_level:
+
 	mov eax, [tries]
 	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
 	mov ecx, 10 ; Optimized
@@ -401,51 +448,7 @@ __syscall:
 	ret
 
 
-;take user input
-__prompt_1:
-mov eax,4
-mov ebx,1
-mov ecx,userprompt
-mov edx,userprompt_len
-nwln
-mov eax,4
-mov ebx,1
-mov ecx,choice_1
-mov edx,choice_1_len
-nwln
-mov eax,4
-mov ebx,1
-mov ecx,choice_2
-mov edx,choice_2_len
-nwln
-mov eax,4
-mov ebx,1
-mov ecx,choice_3
-mov edx,choice_3_len
-ret
 
-__userInput:
-mov eax,3 ;syscall_read
-mov ebx,0 ;stdin
-mov ecx,userChoice ;buffer to be stored in userChoice
-mov edx,2
-ret
-
-__checkInput:
-cmp byte[userChoice],'1'
-je __easy_level
-cmp byte[userChoice],'2'
-je __medium_level
-cmp byte[userChoice],'3'
-je __hard_level
-
-__easy_level:
-
-;
-__medium_level:
-;
-__hard_level:
-;
 ;define an error loop to check if user input is invalid
 
 
