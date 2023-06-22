@@ -26,8 +26,8 @@ section .text
 ;
 	global _start
 _start:
-call __prompt_1
-call __userInput
+;call __prompt_1
+;call __userInput
 ;call __checkInput
 call __syscall
 
@@ -421,6 +421,8 @@ mov eax,4
 mov ebx,1
 mov ecx,userprompt
 mov edx,userprompt_len
+int 80h
+ret
 ;
 mov eax,4
 mov ebx,1
