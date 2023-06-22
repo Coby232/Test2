@@ -469,7 +469,7 @@ section .data
 	
 	choice_3 db "3.For Hard Press 3",0
 	choice_3_len equ $-choice_3
-	;;
+	;;;
 
 	_dev_random db "/dev/random", 0x0
 
