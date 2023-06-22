@@ -458,28 +458,28 @@ int 0x80
 
 section .data
 	;userprompt about level of difficulty strings
-	userprompt db "please choose a level of difficulty",0xa
+	userprompt db "please choose a level of difficulty",0xa,0xa
 	userprompt_len equ $-userprompt
 
-	choice_1 db "1.For Easy Press 1",0
+	choice_1 db "1.For Easy Press 1",0xa,0xa
 	choice_1_len equ $-choice_1
 
-	choice_2 db "2.For Medium Press 2",0
+	choice_2 db "2.For Medium Press 2",0xa,0xa
 	choice_2_len equ $-choice_2
 	
-	choice_3 db "3.For Hard Press 3",0
+	choice_3 db "3.For Hard Press 3",0xa
 	choice_3_len equ $-choice_3
-	;;;
+	;;
 
-	_dev_random db "/dev/random", 0x0
+	_dev_random db "/dev/random", 0xa
 
 	maxrand equ 100
 	tries dd 6
 
-	prompt db " tries left. Input number (1-100): "
+	prompt db " tries left. Input number (1-100): ",0xa,0xa
 	prompt_len equ $-prompt
 
-	hello db 0xa, "Welcome to the guessing game!", 0xa, "I am now thinking of a number. What is it?", 0xa, "Take a guess, from one to one hundred.", 0xa, 0xa
+	hello db 0xa, "Welcome to the guessing game!", 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to one hundred.", 0xa, 0xa
 	hello_len equ $-hello
 
 	reenter db "? REENTER", 0xa, "Invalid unsigned integer. Please re-enter your input.", 0xa
