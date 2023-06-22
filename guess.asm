@@ -9,27 +9,21 @@ section .text
 	
 
 
-;__checkInput:
-;cmp byte[userChoice],'1'
-;je __easy_level
-;cmp byte[userChoice],'2'
-;je __medium_level
-;cmp byte[userChoice],'3'
-;je __hard_level
+
 
 ;__easy_level:
-
 ;
 ;__medium_level:
 ;
 ;__hard_level:
 ;
+
 	global _start
 _start:
-;call __prompt_1
-;call __userInput
-;call __checkInput
-call __syscall
+call __prompt_1
+call __userInput
+call __checkInput
+;call __syscall
 
 ;level1
 	; Get random number
@@ -421,32 +415,41 @@ mov eax,4
 mov ebx,1
 mov ecx,userprompt
 mov edx,userprompt_len
-int 80h
-ret
+int 0x80
 ;
 mov eax,4
 mov ebx,1
 mov ecx,choice_1
 mov edx,choice_1_len
+int 0x80
 ;
 mov eax,4
 mov ebx,1
 mov ecx,choice_2
 mov edx,choice_2_len
+int 0x80
 ;
 mov eax,4
 mov ebx,1
 mov ecx,choice_3
 mov edx,choice_3_len
-ret
+int 0x80
 
 __userInput:
 mov eax,3 ;syscall_read
 mov ebx,0 ;stdin
 mov ecx,userChoice ;buffer to be stored in userChoice
 mov edx,2
-ret
+int 0x80
 
+__checkInput:
+cmp byte[userChoice],'1'
+je __easy_level
+cmp byte[userChoice],'2'
+je __medium_level
+cmp byte[userChoice],'3'
+je __hard_level
+int 0x80
 
 ;define an error loop to check if user input is invalid
 
@@ -455,7 +458,7 @@ ret
 
 section .data
 	;userprompt about level of difficulty strings
-	userprompt db "please choose a level of difficulty",0
+	userprompt db "please choose a level of difficulty",0xa
 	userprompt_len equ $-userprompt
 
 	choice_1 db "1.For Easy Press 1",0
