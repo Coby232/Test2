@@ -6,13 +6,6 @@ STDIN     equ 0
 STDOUT    equ 1
 
 section .text	
-;__easy_level:
-;
-;__medium_level:
-;
-;__hard_level:
-;
-
 	global _start
 _start:
 call __prompt_1
