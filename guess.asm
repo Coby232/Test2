@@ -5,12 +5,7 @@ SYS_WRITE equ 4
 STDIN     equ 0
 STDOUT    equ 1
 
-section .text
-	
-
-
-
-
+section .text	
 ;__easy_level:
 ;
 ;__medium_level:
