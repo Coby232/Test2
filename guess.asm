@@ -22,7 +22,7 @@ section .text
 _start:
 call __prompt_1
 call __userInput
-call __checkInput
+;call __checkInput
 ;call __syscall
 
 ;level1
@@ -442,14 +442,14 @@ mov ecx,userChoice ;buffer to be stored in userChoice
 mov edx,2
 int 0x80
 
-__checkInput:
-cmp byte[userChoice],'1'
-je __easy_level
-cmp byte[userChoice],'2'
-je __medium_level
-cmp byte[userChoice],'3'
-je __hard_level
-int 0x80
+;__checkInput:
+;cmp byte[userChoice],'1'
+;je __easy_level
+;cmp byte[userChoice],'2'
+;je __medium_level
+;cmp byte[userChoice],'3'
+;je __hard_level
+;int 0x80
 
 ;define an error loop to check if user input is invalid
 
