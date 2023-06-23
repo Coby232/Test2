@@ -69,7 +69,7 @@ __easy_level:
 
 _loop:
 
-	; Write prompt
+	; Write prompt input guess
 
 	mov eax, [tries]
 	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
@@ -424,6 +424,7 @@ mov ebx,1
 mov ecx,choice_3
 mov edx,choice_3_len
 int 0x80
+ret
 
 __userInput:
 mov eax,3 ;syscall_read
@@ -431,12 +432,12 @@ mov ebx,0 ;stdin
 mov ecx,userChoice ;buffer to be stored in userChoice
 mov edx,2
 int 0x80
-ret
+
 __checkInput:
 cmp byte[userChoice],'1'
 je __easy_level
-;cmp byte[userChoice],'2'
-;je __medium_level
+cmp byte[userChoice],'2'
+je __medium_level
 ;cmp byte[userChoice],'3'
 ;je __hard_level
 ;int 0x80
@@ -448,7 +449,7 @@ je __easy_level
 
 section .data
 	;userprompt about level of difficulty strings
-	userprompt db "please choose a level of difficulty",0xa,0xa
+	userprompt db 0xa,"Welcome to our guessing game!" ,0xa ,0xa ,"please choose a level of difficulty",0xa,0xa
 	userprompt_len equ $-userprompt
 
 	choice_1 db "1.For Easy Press 1",0xa,0xa
@@ -466,7 +467,7 @@ section .data
 	maxrand equ 100
 	tries dd 6
 
-	prompt db 0xa,"Welcome to the guessing game!",0xa " tries left. Input number (1-100): ",0xa,0xa
+	prompt db  " tries left. Input number (1-100): ",0xa,0xa
 	prompt_len equ $-prompt
 
 	hello db 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to one hundred.", 0xa, 0xa
