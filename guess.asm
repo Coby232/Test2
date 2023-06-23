@@ -373,18 +373,18 @@ __itoa_loop2:
 	ret
 ;;;;
 																						; MEDIUM LEVEL
-_modup:
+_modup2:
 	add eax, maxrand
 	jmp __medium_level
 
-_moddown:
+_moddown2:
 	sub eax, maxrand
 	
 __medium_level:
 	cmp eax, maxrand
-	jg _moddown
+	jg _moddown2
 	cmp eax, 1 ; Is it lower than 1?
-	jl _modup
+	jl _modup2
 
 	mov [randint], eax
 
@@ -402,14 +402,14 @@ __medium_level:
 	mov edx, hello_len
 	call __syscall
 
-_loop:
+_loop2:
 
 	; Write prompt
 
 	mov eax, [tries]
 	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
 	mov ecx, 10 ; Optimized
-	call __itoa_knowndigits
+	call __itoa_knowndigits2
 	
 	mov ecx, eax
 	mov edx, ebx
@@ -438,18 +438,18 @@ _loop:
 	sub ecx, 1 ; Get rid of extra newline
 	
 	cmp ecx, 1 ; Is the length of the number less than 1? (invalid)
-	jl _reenter
+	jl _reenter2
 
 	mov ebx, ecx
 
 	mov eax, 0 ; Initalize eax
-	jmp _loopconvert_nomul
+	jmp _loopconvert_nomul2
 ;;;;
-_loopconvert:
+_loopconvert2:
 
 	imul eax, 10 ; Multiply by 10
 	
-_loopconvert_nomul:
+_loopconvert_nomul2:
 
 	mov edx, ebx
 	sub edx, ecx
@@ -461,20 +461,20 @@ _loopconvert_nomul:
 	sub ah, 48 ; ASCII digits offset
 	
 	cmp ah, 0 ; Less than 0?
-	jl _reenter
+	jl _reenter2
 	cmp ah, 9 ; More than 9?
-	jg _reenter
+	jg _reenter2
 
 	movzx edx, ah
 	
 	pop eax
 	add eax, edx
 
-	loop _loopconvert
+	loop _loopconvert2
 	
-	jmp _convertok
+	jmp _convertok2
 
-_reenter:
+_reenter2:
 
 	; Write message
 
@@ -486,9 +486,9 @@ _reenter:
 
 	; Repeat enter
 
-	jmp _loop
+	jmp _loop2
 	
-_toohigh:
+_toohigh2:
 
 	call __write
 	mov ebx, 1 ; Stdout
@@ -498,7 +498,7 @@ _toohigh:
 
 	jmp _again
 
-_toolow:
+_toolow2:
 	
 	call __write
 	mov ebx, 1 ; Stdout
@@ -506,16 +506,16 @@ _toolow:
 	mov edx, toolow_len
 	call __syscall
 
-_again:
+_again2:
 
 	cmp dword [tries], 1 ; Is this the last try?
-	jle _lose
+	jle _lose2
 
 	sub dword [tries], 1 ; Minus one try.
 	
-	jmp _loop
+	jmp _loop2
 
-_lose:
+_lose2:
 
 	; You lose
 
@@ -526,7 +526,7 @@ _lose:
 	call __syscall
 
 	mov eax, [randint]
-	call __itoa
+	call __itoa2
 
 	mov ecx, eax
 	mov edx, ebx
@@ -544,13 +544,13 @@ _lose:
 
 	jmp _exit
 
-_convertok:
+_convertok2:
 
 	; Compare input
 
 	cmp eax, [randint]
-	jg _toohigh
-	jl _toolow
+	jg _toohigh2
+	jl _toolow2
 
 	; You win
 
@@ -562,7 +562,7 @@ _convertok:
 
 	mov ebx, 1 ; Exit code for OK, win.
 
-_exit:
+_exit2:
 
 	push ebx
 
@@ -594,7 +594,7 @@ _exit:
 	
 ; Procedures
 
-__itoa_init:
+__itoa_init2:
 
 	; push eax
 	; push ebx
@@ -610,27 +610,27 @@ __itoa_init:
 	
 	ret
 
-__itoa: ; Accept eax (i), return eax (a), ebx (l)
+__itoa2: ; Accept eax (i), return eax (a), ebx (l)
 
-	call __itoa_init
+	call __itoa_init2
 
 	mov ecx, 10 ; Start with 10 (first 2-digit)
 	mov ebx, 1 ; If less than 10, it has 1 digit.
 
-__itoa_loop:
+__itoa_loop2:
 
 	cmp eax, ecx
-	jl __itoa_loopend
+	jl __itoa_loopend2
 
 	imul ecx, 10 ; Then go to 100, 1000...
 	add ebx, 1 ; Then go to 2, 3...
-	jmp __itoa_loop
+	jmp __itoa_loop2
 
-__itoa_knowndigits: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
+__itoa_knowndigits2: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
 
-	call __itoa_init
+	call __itoa_init2
 
-__itoa_loopend:
+__itoa_loopend2:
 
 	; Prepare for loop
 	; edx now contains m
