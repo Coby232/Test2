@@ -636,7 +636,7 @@ __itoa_loopend2:
 	
 	push ebx
 
-__itoa_loop2:
+__itoa_loop3:
 
 	push eax
 
@@ -678,7 +678,7 @@ __itoa_loop2:
 	sub ebx, eax ; New number
 	mov eax, ebx	
 
-	loop __itoa_loop2
+	loop __itoa_loop3
 
 	; Return buffer array address and
 	; Pop preserved ebx as length
