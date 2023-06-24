@@ -366,7 +366,6 @@ __itoa_loop2:
 	ret
 ;;;;
 																						; MEDIUM LEVEL
-__medium_level:
 ;checks if the number of tries has reached limited
 _modup_2:
 	add eax, maxrand2
@@ -442,13 +441,13 @@ _loop_2:
 	mov ebx, ecx
 
 	mov eax, 0 ; Initalize eax
-	jmp _loopconvert_nomul
+	jmp _loopconvert_nomul_2
 ;;;;
-_loopconvert:
+_loopconvert_2:
 
 	imul eax, 10 ; Multiply by 10
 	
-_loopconvert_nomul:
+_loopconvert_nomul_2:
 
 	mov edx, ebx
 	sub edx, ecx
@@ -460,21 +459,21 @@ _loopconvert_nomul:
 	sub ah, 48 ; ASCII digits offset
 	
 	cmp ah, 0 ; Less than 0?
-	jl _reenter
+	jl _reenter_2
 	cmp ah, 9 ; More than 9?
-	jg _reenter
+	jg _reenter_2
 
 	movzx edx, ah
 	
 	pop eax
 	add eax, edx
 
-	loop _loopconvert
+	loop _loopconvert_2
 	
 	jmp _convertok
 
 ;possible change
-_reenter:
+_reenter_2:
 
 	; Write message
 
@@ -489,16 +488,16 @@ _reenter:
 	jmp _loop_2
 
 ;change
-_again:
+_again_2:
 
 	cmp dword [tries2], 1 ; Is this the last try?
-	jle _lose
+	jle _lose_2
 
 	sub dword [tries2], 1 ; Minus one try.
 	
 	jmp _loop_2
 
-_lose:
+_lose_2:
 
 	; You lose
 
