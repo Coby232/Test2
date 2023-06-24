@@ -366,6 +366,11 @@ __itoa_loop2:
 	ret
 ;;;;
 																						; MEDIUM LEVEL
+
+
+
+
+
 ;checks if the number of tries has reached limited
 _modup_2:
 	add eax, maxrand2
@@ -491,7 +496,7 @@ _reenter_2:
 
 	jmp _loop_2
 	
-_toohigh:
+_toohigh_2:
 
 	call __write
 	mov ebx, 1 ; Stdout
@@ -501,7 +506,7 @@ _toohigh:
 
 	jmp _again
 
-_toolow:
+_toolow_2:
 	
 	call __write
 	mov ebx, 1 ; Stdout
@@ -518,7 +523,7 @@ _again_2:
 	
 	jmp _loop_2
 
-_lose:
+_lose_2:
 
 	; You lose
 
@@ -552,8 +557,8 @@ _convertok_2:
 	; Compare input
 
 	cmp eax, [randint]
-	jg _toohigh
-	jl _toolow
+	jg _toohigh_2
+	jl _toolow_2
 
 	; You win
 
@@ -600,7 +605,7 @@ __itoa_loop_2:
 	add ebx, 1 ; Then go to 2, 3...
 	jmp __itoa_loop_2
 
-__itoa_knowndigits: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
+__itoa_knowndigits_2: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
 
 	call __itoa_init_2
 
