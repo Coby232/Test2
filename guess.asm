@@ -400,6 +400,7 @@ __medium_level:
 ;create diff loop
 ;diff _again
 
+
 _loop_2:
 
 	; Write prompt input guess
@@ -443,6 +444,9 @@ _loop_2:
 	mov eax, 0 ; Initalize eax
 	jmp _loopconvert_nomul_2
 ;;;;
+
+;-----
+
 _loopconvert_2:
 
 	imul eax, 10 ; Multiply by 10
@@ -470,7 +474,7 @@ _loopconvert_nomul_2:
 
 	loop _loopconvert_2
 	
-	jmp _convertok
+	jmp _convertok_2
 
 ;possible change
 _reenter_2:
@@ -486,8 +490,25 @@ _reenter_2:
 	; Repeat enter
 
 	jmp _loop_2
+	
+_toohigh:
 
-;change
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, toohigh
+	mov edx, toohigh_len
+	call __syscall
+
+	jmp _again
+
+_toolow:
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, toolow
+	mov edx, toolow_len
+	call __syscall
+
 _again_2:
 
 	cmp dword [tries2], 1 ; Is this the last try?
@@ -497,7 +518,7 @@ _again_2:
 	
 	jmp _loop_2
 
-_lose_2:
+_lose:
 
 	; You lose
 
@@ -508,7 +529,7 @@ _lose_2:
 	call __syscall
 
 	mov eax, [randint]
-	call __itoa
+	call __itoa_2
 
 	mov ecx, eax
 	mov edx, ebx
@@ -525,6 +546,134 @@ _lose_2:
 	mov ebx, 2 ; Exit code for OK, lose.
 
 	jmp _exit
+
+_convertok_2:
+
+	; Compare input
+
+	cmp eax, [randint]
+	jg _toohigh
+	jl _toolow
+
+	; You win
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youwin
+	mov edx, youwin_len
+	call __syscall
+
+	mov ebx, 1 ; Exit code for OK, win.
+;
+	
+; Procedures
+
+__itoa_init_2:
+
+	; push eax
+	; push ebx
+	; We do not have to preserve as it will contain
+	; A return value
+
+	pop dword [_itoabuf]
+
+	push ecx
+	push edx
+
+	push dword [_itoabuf]
+	
+	ret
+
+__itoa_2: ; Accept eax (i), return eax (a), ebx (l)
+
+	call __itoa_init_2
+
+	mov ecx, 10 ; Start with 10 (first 2-digit)
+	mov ebx, 1 ; If less than 10, it has 1 digit.
+
+__itoa_loop_2:
+
+	cmp eax, ecx
+	jl __itoa_loopend_2
+
+	imul ecx, 10 ; Then go to 100, 1000...
+	add ebx, 1 ; Then go to 2, 3...
+	jmp __itoa_loop_2
+
+__itoa_knowndigits: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
+
+	call __itoa_init_2
+
+__itoa_loopend_2:
+
+	; Prepare for loop
+	; edx now contains m
+	; ecx is now ready to count.
+	; eax already has i
+	; ebx already has d.
+
+	mov edx, ecx
+	mov ecx, ebx
+	
+	push ebx
+
+__itoa_loop2_2:
+
+	push eax
+
+	; Divide m by 10 into m
+
+	mov eax, edx
+	mov edx, 0 ; Exponent is 0
+	mov ebx, 10 ; Divide by 10
+
+	idiv ebx
+	mov ebx, eax ; New m
+	
+	; Divide number by new m into (1)
+
+	mov eax, [esp] ; Number
+	mov edx, 0 ; Exponent is 0
+	idiv ebx ; (1)
+
+	; Store into buffer
+
+	mov edx, [esp+4] ; Each dword has 4 bytes
+	sub edx, ecx
+	
+	add eax, 48 ; Offset (1) as ASCII number
+	
+	mov [_itoabuf+edx], eax
+
+	sub eax, 48 ; Un-offset (1) to prepare for next step
+
+	; Multiply (1) by m into (1)
+
+	imul eax, ebx
+
+	; Subtract number by (1) into number
+	
+	mov edx, ebx ; Restore new-m back to edx as m
+	
+	pop ebx ; Number
+	sub ebx, eax ; New number
+	mov eax, ebx	
+
+	loop __itoa_loop2_2
+
+	; Return buffer array address and
+	; Pop preserved ebx as length
+
+	mov eax, _itoabuf
+	pop ebx
+
+	; Pop preserved registers and restore
+
+	pop edx
+	pop ecx	
+
+	ret
+;;;;
 ;END OF LEVEL 2
 ;;END OF LEVEL 2
 __hard_level:
@@ -633,9 +782,12 @@ section .data
 	;
 
 	;medium level tries
-	maxrand2 equ 500
-	tries2 dd 4
-
+	;maxrand2 equ 500
+	;tries2 dd 4
+	;hard level tries
+	maxrand3 equ 1000
+	tries3 dd 2
+	;medium
 	prompt_2 db  " tries left. Input number (1-500): ",0xa,0xa
 	prompt_len_2 equ $-prompt_2
 
