@@ -442,7 +442,7 @@ _loop_2:
 	sub ecx, 1 ; Get rid of extra newline
 	
 	cmp ecx, 1 ; Is the length of the number less than 1? (invalid)
-	jl _reenter
+	jl _reenter_2
 
 	mov ebx, ecx
 
@@ -463,7 +463,7 @@ _loopconvert_nomul_2:
 	
 	push eax
 	
-	mov ah, [inputbuf+edx]
+	mov ah, [inputbuf_2+edx]
 	
 	sub ah, 48 ; ASCII digits offset
 	
@@ -580,12 +580,12 @@ __itoa_init_2:
 	; We do not have to preserve as it will contain
 	; A return value
 
-	pop dword [_itoabuf]
+	pop dword [_itoabuf_2]
 
 	push ecx
 	push edx
 
-	push dword [_itoabuf]
+	push dword [_itoabuf_2]
 	
 	ret
 
@@ -781,17 +781,18 @@ section .data
 
 	_dev_random db "/dev/random", 0xa
 
-	;hard level tries
+	;easylevel tries
 	maxrand equ 100
 	tries dd 6
-	;
 
 	;medium level tries
-	;maxrand2 equ 500
-	;tries2 dd 4
+	maxrand2 equ 500
+	tries2 dd 4
+
 	;hard level tries
 	maxrand3 equ 1000
 	tries3 dd 2
+
 	;medium
 	prompt_2 db  " tries left. Input number (1-500): ",0xa,0xa
 	prompt_len_2 equ $-prompt_2
@@ -833,6 +834,7 @@ section .data
 section .bss
 
 	userChoice resb 1
+	
 	randint resw 2
 	downsize resw 2
 	
@@ -840,3 +842,11 @@ section .bss
 
 	inputbuf resb 1024
 	inputbuf_len equ 1024
+
+;medium level
+	downsize_2 resw 2
+	
+	_itoabuf_2 resb 1024
+
+	inputbuf_2 resb 1024
+	inputbuf_len_2 equ 1024
