@@ -367,8 +367,172 @@ __itoa_loop2:
 ;;;;
 																						; MEDIUM LEVEL
 __medium_level:
-call __prompt_1
+;checks if the number of tries has reached limited
+_modup_2:
+	add eax, maxrand2
+	jmp __medium_level
+
+_moddown_2:
+	sub eax, maxrand2
+
+__medium_level:
+
+	cmp eax, maxrand2
+	jg _moddown_2
+	cmp eax, 1 ; Is it lower than 1?
+	jl _modup_2
+
+	mov [randint], eax
+
+	;call __write
+	;mov ebx, 1
+	;mov ecx, randint
+	;mov edx, 4
+	;call __syscall
+
+	; Write hello message
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, hello_2
+	mov edx, hello_len_2
+	call __syscall
+
+;create diff loop
+;diff _again
+
+_loop_2:
+
+	; Write prompt input guess
+
+	mov eax, [tries2]
+	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
+	mov ecx, 10 ; Optimized
+	call __itoa_knowndigits
+	
+	mov ecx, eax
+	mov edx, ebx
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	call __syscall
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, prompt_2
+	mov edx, prompt_len_2
+	call __syscall
+	
+	; Read input
+
+	call __read
+	mov ebx, 0 ; Stdin
+	mov ecx, inputbuf
+	mov edx, inputbuf_len
+	call __syscall
+
+	; Convert into integer
+
+	mov ecx, eax
+	sub ecx, 1 ; Get rid of extra newline
+	
+	cmp ecx, 1 ; Is the length of the number less than 1? (invalid)
+	jl _reenter
+
+	mov ebx, ecx
+
+	mov eax, 0 ; Initalize eax
+	jmp _loopconvert_nomul
+;;;;
+_loopconvert:
+
+	imul eax, 10 ; Multiply by 10
+	
+_loopconvert_nomul:
+
+	mov edx, ebx
+	sub edx, ecx
+	
+	push eax
+	
+	mov ah, [inputbuf+edx]
+	
+	sub ah, 48 ; ASCII digits offset
+	
+	cmp ah, 0 ; Less than 0?
+	jl _reenter
+	cmp ah, 9 ; More than 9?
+	jg _reenter
+
+	movzx edx, ah
+	
+	pop eax
+	add eax, edx
+
+	loop _loopconvert
+	
+	jmp _convertok
+
+;possible change
+_reenter:
+
+	; Write message
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, reenter
+	mov edx, reenter_len
+	call __syscall
+
+	; Repeat enter
+
+	jmp _loop_2
+
+;change
+_again:
+
+	cmp dword [tries2], 1 ; Is this the last try?
+	jle _lose
+
+	sub dword [tries2], 1 ; Minus one try.
+	
+	jmp _loop_2
+
+_lose:
+
+	; You lose
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youlose
+	mov edx, youlose_len
+	call __syscall
+
+	mov eax, [randint]
+	call __itoa
+
+	mov ecx, eax
+	mov edx, ebx
+	call __write
+	mov ebx, 1 ; Stdout
+	call __syscall
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youlose2
+	mov edx, youlose2_len
+	call __syscall
+
+	mov ebx, 2 ; Exit code for OK, lose.
+
+	jmp _exit
+;END OF LEVEL 2
 ;;END OF LEVEL 2
+__hard_level:
+call __prompt_1
+;;END OF LEVEL 3
+
+;__error:
 __exit:
 	
 	mov eax, 1 ; Exit syscall
@@ -438,8 +602,8 @@ cmp byte[userChoice],'1'
 je __easy_level
 cmp byte[userChoice],'2'
 je __medium_level
-;cmp byte[userChoice],'3'
-;je __hard_level
+cmp byte[userChoice],'3'
+je __hard_level
 ;int 0x80
 
 ;define an error loop to check if user input is invalid
@@ -464,8 +628,21 @@ section .data
 
 	_dev_random db "/dev/random", 0xa
 
+	;hard level tries
 	maxrand equ 100
 	tries dd 6
+	;
+
+	;medium level tries
+	maxrand2 equ 500
+	tries2 dd 4
+
+	prompt_2 db  " tries left. Input number (1-500): ",0xa,0xa
+	prompt_len_2 equ $-prompt_2
+
+	hello_2 db 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to five hundred.", 0xa, 0xa
+	hello_len_2 equ $-hello_2
+	;
 
 	prompt db  " tries left. Input number (1-100): ",0xa,0xa
 	prompt_len equ $-prompt
