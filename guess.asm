@@ -442,7 +442,7 @@ _loop_2:
 	sub ecx, 1 ; Get rid of extra newline
 	
 	cmp ecx, 1 ; Is the length of the number less than 1? (invalid)
-	jl _reenter_2
+	jl _reenter
 
 	mov ebx, ecx
 
@@ -463,14 +463,14 @@ _loopconvert_nomul_2:
 	
 	push eax
 	
-	mov ah, [inputbuf_2+edx]
+	mov ah, [inputbuf+edx]
 	
 	sub ah, 48 ; ASCII digits offset
 	
 	cmp ah, 0 ; Less than 0?
-	jl _reenter_2
+	jl _again_2
 	cmp ah, 9 ; More than 9?
-	jg _reenter_2
+	jg _again_2
 
 	movzx edx, ah
 	
@@ -504,7 +504,7 @@ _toohigh_2:
 	mov edx, toohigh_len
 	call __syscall
 
-	jmp _again
+	jmp _again_2
 
 _toolow_2:
 	
@@ -580,12 +580,12 @@ __itoa_init_2:
 	; We do not have to preserve as it will contain
 	; A return value
 
-	pop dword [_itoabuf_2]
+	pop dword [_itoabuf]
 
 	push ecx
 	push edx
 
-	push dword [_itoabuf_2]
+	push dword [_itoabuf]
 	
 	ret
 
@@ -757,7 +757,6 @@ cmp byte[userChoice],'2'
 je __medium_level
 cmp byte[userChoice],'3'
 je __hard_level
-;int 0x80
 
 ;define an error loop to check if user input is invalid
 
@@ -834,7 +833,7 @@ section .data
 section .bss
 
 	userChoice resb 1
-	
+
 	randint resw 2
 	downsize resw 2
 	
