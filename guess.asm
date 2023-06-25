@@ -396,7 +396,7 @@ _loop_2:
 	mov eax, [tries2]
 	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
 	mov ecx, 10 ; Optimized
-	call __itoa_knowndigits
+	call __itoa_knowndigits_2
 	
 	mov ecx, eax
 	mov edx, ebx
@@ -737,10 +737,10 @@ _loop_3:
 
 	; Write prompt input guess
 
-	mov eax, [tries2]
+	mov eax, [tries3] ; tell the user how much tries left
 	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
 	mov ecx, 10 ; Optimized
-	call __itoa_knowndigits
+	call __itoa_knowndigits_3
 	
 	mov ecx, eax
 	mov edx, ebx
@@ -1022,7 +1022,7 @@ __itoa_loop2_3:
 	sub ebx, eax ; New number
 	mov eax, ebx	
 
-	loop __itoa_loop2_2
+	loop __itoa_loop2_3
 
 	; Return buffer array address and
 	; Pop preserved ebx as length
@@ -1227,9 +1227,9 @@ section .bss
 	inputbuf_len equ 1024
 
 ;medium level
-	downsize_2 resw 2
+	; downsize_2 resw 2
 	
-	_itoabuf_2 resb 1024
+	; _itoabuf_2 resb 1024
 
-	inputbuf_2 resb 1024
-	inputbuf_len_2 equ 1024
+	; inputbuf_2 resb 1024
+	; inputbuf_len_2 equ 1024
