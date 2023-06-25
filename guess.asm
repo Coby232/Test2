@@ -13,7 +13,6 @@ call __userInput
 call __checkInput
 ;call __syscall
 
-;level1
 	; Get random number
 	
 	call __open
@@ -570,6 +569,37 @@ _convertok_2:
 
 	mov ebx, 1 ; Exit code for OK, win.
 ;
+
+_exit_2:
+
+	push ebx
+
+	; Print normal goodbye
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, goodbye
+	mov edx, goodbye_len
+	call __syscall
+	mov ebx, 2 ; Stderr
+	call __syscall
+
+	; Report OK.
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, _ok
+	mov edx, _ok_len
+	call __syscall
+	mov ebx, 2 ; Stderr
+	call __syscall
+
+	; Exit
+
+	call __exit
+	pop ebx
+	call __syscall
+	
 	
 ; Procedures
 
