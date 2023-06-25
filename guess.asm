@@ -8,31 +8,13 @@ STDOUT    equ 1
 section .text	
 	global _start
 _start:
+
 call __prompt_1
 call __userInput
 call __checkInput
-;call __syscall
 
-	; Get random number
-	
-	call __open
-	mov ebx, _dev_random
-	mov ecx, 0 ; RDONLY
-	call __syscall
-
-	mov ebx, eax
-	push eax
-	call __read
-	mov ecx, randint
-	mov edx, 4 ; 4 bytes of random; 32-bit
-	call __syscall
-	
-	call __close
-	pop ebx
-	call __syscall
-
-	mov eax, [randint]
-	;the random number needs to be fetched before starting the levels
+	; Get random number for easy level
+call _generate_random
 
 																				;EASY LEVEL
  ;checks if the number of tries has reached limited
@@ -364,11 +346,12 @@ __itoa_loop2:
 
 	ret
 ;;;;
-																						; MEDIUM LEVEL
+													; MEDIUM LEVEL
 
 
 
-
+;generate random number for medium level
+call _generate_random
 
 ;checks if the number of tries has reached limited
 _modup_2:
@@ -745,6 +728,29 @@ __syscall:
 
 	int 0x80 ; Interupt kernel
 	ret
+
+	; Get random number
+_generate_random:
+	call __open
+	mov ebx, _dev_random
+	mov ecx, 0 ; RDONLY
+	call __syscall
+
+	mov ebx, eax
+	push eax
+	call __read
+	mov ecx, randint2
+	mov edx, 4 ; 4 bytes of random; 32-bit
+	call __syscall
+	
+	call __close
+	pop ebx
+	call __syscall
+
+	mov eax, [randint]
+	ret
+	;the random number needs to be fetched before starting the levels
+
 ;take user input
 __prompt_1:
 mov eax,4
