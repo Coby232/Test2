@@ -9,14 +9,15 @@ section .text
 	global _start
 _start:
 
+
+
+	; Get random number for easy level
+
 call __prompt_1
 call __userInput
 call __checkInput
-
-	; Get random number for easy level
 call _generate_random
-
-																				;EASY LEVEL
+																			;EASY LEVEL
  ;checks if the number of tries has reached limited
 _modup:
 	add eax, maxrand
@@ -107,9 +108,9 @@ _loopconvert_nomul:
 	sub ah, 48 ; ASCII digits offset
 	
 	cmp ah, 0 ; Less than 0?
-	jl _reenter
+	jl _again
 	cmp ah, 9 ; More than 9?
-	jg _reenter
+	jg _again
 
 	movzx edx, ah
 	
@@ -350,8 +351,7 @@ __itoa_loop2:
 
 
 
-;generate random number for medium level
-call _generate_random
+
 
 ;checks if the number of tries has reached limited
 _modup_2:
@@ -362,7 +362,8 @@ _moddown_2:
 	sub eax, maxrand2
 
 __medium_level:
-
+	;generate random number for medium level
+	call _generate_random
 	cmp eax, maxrand2
 	jg _moddown_2
 	cmp eax, 1 ; Is it lower than 1?
@@ -606,7 +607,7 @@ __itoa_2: ; Accept eax (i), return eax (a), ebx (l)
 
 	call __itoa_init_2
 
-	mov ecx, 10 ; Start with 10 (first 2-digit)
+	mov ecx, 10 ; Start with 10 (first 2-digit) 'if altered answer is seen as 0 but 10'
 	mov ebx, 1 ; If less than 10, it has 1 digit.
 
 __itoa_loop_2:
@@ -614,8 +615,8 @@ __itoa_loop_2:
 	cmp eax, ecx
 	jl __itoa_loopend_2
 
-	imul ecx, 10 ; Then go to 100, 1000...
-	add ebx, 1 ; Then go to 2, 3...
+	imul ecx, 10 ; Then go to 100, 1000... 'if set to 100 answer is 10 but seen as 00'
+	add ebx, 1 ; Then go to 2, 3... 'if set to 10 the answer becomes 00000... but meaning 10'
 	jmp __itoa_loop_2
 
 __itoa_knowndigits_2: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
@@ -643,7 +644,7 @@ __itoa_loop2_2:
 
 	mov eax, edx
 	mov edx, 0 ; Exponent is 0
-	mov ebx, 10 ; Divide by 10
+	mov ebx, 10 ; Divide by 10 ;if div the answer will be 00 but meaning 10
 
 	idiv ebx
 	mov ebx, eax ; New m
@@ -693,9 +694,349 @@ __itoa_loop2_2:
 	ret
 ;;;;
 ;END OF LEVEL 2
-;;END OF LEVEL 2
+
+																			;;HARD LEVEL
+
+;checks if the number of tries has reached limited
+_modup_3:
+	add eax, maxrand3
+	jmp __hard_level
+
+_moddown_3:
+	sub eax, maxrand3
+
 __hard_level:
-call __prompt_1
+	;generate random number for medium level
+	call _generate_random
+	cmp eax, maxrand3
+	jg _moddown_3
+	cmp eax, 1 ; Is it lower than 1?
+	jl _modup_3
+
+	mov [randint], eax
+
+	;call __write
+	;mov ebx, 1
+	;mov ecx, randint
+	;mov edx, 4
+	;call __syscall
+
+	; Write hello message
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, hello_3
+	mov edx, hello_len_3
+	call __syscall
+
+;create diff loop
+;diff _again
+
+
+_loop_3:
+
+	; Write prompt input guess
+
+	mov eax, [tries2]
+	mov ebx, 1 ; Optimization warning: May change. Do not use if tries > 9. Use standard __itoa instead.
+	mov ecx, 10 ; Optimized
+	call __itoa_knowndigits
+	
+	mov ecx, eax
+	mov edx, ebx
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	call __syscall
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, prompt_3
+	mov edx, prompt_len_3
+	call __syscall
+	
+	; Read input
+
+	call __read
+	mov ebx, 0 ; Stdin
+	mov ecx, inputbuf
+	mov edx, inputbuf_len
+	call __syscall
+
+	; Convert into integer
+
+	mov ecx, eax
+	sub ecx, 1 ; Get rid of extra newline
+	
+	cmp ecx, 1 ; Is the length of the number less than 1? (invalid)
+	jl _reenter
+
+	mov ebx, ecx
+
+	mov eax, 0 ; Initalize eax
+	jmp _loopconvert_nomul_3
+;;;;
+
+;-----
+
+_loopconvert_3:
+
+	imul eax, 10 ; Multiply by 10
+	
+_loopconvert_nomul_3:
+
+	mov edx, ebx
+	sub edx, ecx
+	
+	push eax
+	
+	mov ah, [inputbuf+edx]
+	
+	sub ah, 48 ; ASCII digits offset
+	
+	cmp ah, 0 ; Less than 0?
+	jl _again_3
+	cmp ah, 9 ; More than 9?
+	jg _again_3
+
+	movzx edx, ah
+	
+	pop eax
+	add eax, edx
+
+	loop _loopconvert_3
+	
+	jmp _convertok_3
+
+;possible change
+_reenter_3:
+
+	; Write message
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, reenter
+	mov edx, reenter_len
+	call __syscall
+
+	; Repeat enter
+
+	jmp _loop_3
+	
+_toohigh_3:
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, toohigh
+	mov edx, toohigh_len
+	call __syscall
+
+	jmp _again_3
+
+_toolow_3:
+	
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, toolow
+	mov edx, toolow_len
+	call __syscall
+
+_again_3:
+
+	cmp dword [tries3], 1 ; Is this the last try?
+	jle _lose_3
+
+	sub dword [tries3], 1 ; Minus one try.
+	
+	jmp _loop_3
+
+_lose_3:
+
+	; You lose
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youlose
+	mov edx, youlose_len
+	call __syscall
+
+	mov eax, [randint]
+	call __itoa_3
+
+	mov ecx, eax
+	mov edx, ebx
+	call __write
+	mov ebx, 1 ; Stdout
+	call __syscall
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youlose2
+	mov edx, youlose2_len
+	call __syscall
+
+	mov ebx, 2 ; Exit code for OK, lose.
+
+	jmp _exit
+
+_convertok_3:
+
+	; Compare input
+
+	cmp eax, [randint]
+	jg _toohigh_3
+	jl _toolow_3
+
+	; You win
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, youwin
+	mov edx, youwin_len
+	call __syscall
+
+	mov ebx, 1 ; Exit code for OK, win.
+;
+
+_exit_3:
+
+	push ebx
+
+	; Print normal goodbye
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, goodbye
+	mov edx, goodbye_len
+	call __syscall
+	mov ebx, 2 ; Stderr
+	call __syscall
+
+	; Report OK.
+
+	call __write
+	mov ebx, 1 ; Stdout
+	mov ecx, _ok
+	mov edx, _ok_len
+	call __syscall
+	mov ebx, 2 ; Stderr
+	call __syscall
+
+	; Exit
+
+	call __exit
+	pop ebx
+	call __syscall
+	
+	
+; Procedures
+
+__itoa_init_3:
+
+	; push eax
+	; push ebx
+	; We do not have to preserve as it will contain
+	; A return value
+
+	pop dword [_itoabuf]
+
+	push ecx
+	push edx
+
+	push dword [_itoabuf]
+	
+	ret
+
+__itoa_3: ; Accept eax (i), return eax (a), ebx (l)
+
+	call __itoa_init_3
+
+	mov ecx, 10 ; Start with 10 (first 2-digit) 'if altered answer is seen as 0 but 10'
+	mov ebx, 1 ; If less than 10, it has 1 digit.
+
+__itoa_loop_3:
+
+	cmp eax, ecx
+	jl __itoa_loopend_3
+
+	imul ecx, 10 ; Then go to 100, 1000... 'if set to 100 answer is 10 but seen as 00'
+	add ebx, 1 ; Then go to 2, 3... 'if set to 10 the answer becomes 00000... but meaning 10'
+	jmp __itoa_loop_3
+
+__itoa_knowndigits_3: ; Accept eax (i), ebx (d), ecx (m), return eax (a), ebx (l)
+
+	call __itoa_init_3
+
+__itoa_loopend_3:
+
+	; Prepare for loop
+	; edx now contains m
+	; ecx is now ready to count.
+	; eax already has i
+	; ebx already has d.
+
+	mov edx, ecx
+	mov ecx, ebx
+	
+	push ebx
+
+__itoa_loop2_3:
+
+	push eax
+
+	; Divide m by 10 into m
+
+	mov eax, edx
+	mov edx, 0 ; Exponent is 0
+	mov ebx, 10 ; Divide by 10 ;if div the answer will be 00 but meaning 10
+
+	idiv ebx
+	mov ebx, eax ; New m
+	
+	; Divide number by new m into (1)
+
+	mov eax, [esp] ; Number
+	mov edx, 0 ; Exponent is 0
+	idiv ebx ; (1)
+
+	; Store into buffer
+
+	mov edx, [esp+4] ; Each dword has 4 bytes
+	sub edx, ecx
+	
+	add eax, 48 ; Offset (1) as ASCII number
+	
+	mov [_itoabuf+edx], eax
+
+	sub eax, 48 ; Un-offset (1) to prepare for next step
+
+	; Multiply (1) by m into (1)
+
+	imul eax, ebx
+
+	; Subtract number by (1) into number
+	
+	mov edx, ebx ; Restore new-m back to edx as m
+	
+	pop ebx ; Number
+	sub ebx, eax ; New number
+	mov eax, ebx	
+
+	loop __itoa_loop2_2
+
+	; Return buffer array address and
+	; Pop preserved ebx as length
+
+	mov eax, _itoabuf
+	pop ebx
+
+	; Pop preserved registers and restore
+
+	pop edx
+	pop ecx	
+
+	ret
+;;;;
 ;;END OF LEVEL 3
 
 ;__error:
@@ -739,7 +1080,7 @@ _generate_random:
 	mov ebx, eax
 	push eax
 	call __read
-	mov ecx, randint2
+	mov ecx, randint
 	mov edx, 4 ; 4 bytes of random; 32-bit
 	call __syscall
 	
@@ -836,6 +1177,13 @@ section .data
 	hello_len_2 equ $-hello_2
 	;
 
+	;hard level prompts
+	prompt_3 db  " tries left. Input number (1-1000): ",0xa,0xa
+	prompt_len_3 equ $-prompt_3
+
+	hello_3 db 0xa, 0xa, "I am now thinking of a number. What is it?", 0xa,0xa, "Take a guess, from one to one thousand.", 0xa, 0xa
+	hello_len_3 equ $-hello_3
+;
 	prompt db  " tries left. Input number (1-100): ",0xa,0xa
 	prompt_len equ $-prompt
 
