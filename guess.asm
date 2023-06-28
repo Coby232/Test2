@@ -13,10 +13,10 @@ _start:
 
 	; Get random number for easy level
 
-call __prompt_1
+call __prompt_1 ;ask the user to choice a level of difficulty
 call __userInput
-call __checkInput
-call _generate_random
+call __checkInput ;check the input of the user
+call _generate_random ; random number must be fetched before entering a level
 																			;EASY LEVEL
  ;checks if the number of tries has reached limited
 _modup:
