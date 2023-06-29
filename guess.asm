@@ -415,8 +415,8 @@ _loop_2:
 
 	call __read
 	mov ebx, 0 ; Stdin
-	mov ecx, inputbuf
-	mov edx, inputbuf_len
+	mov ecx, inputbuf_2
+	mov edx, inputbuf_len_2
 	call __syscall
 
 	; Convert into integer
@@ -446,7 +446,7 @@ _loopconvert_nomul_2:
 	
 	push eax
 	
-	mov ah, [inputbuf+edx]
+	mov ah, [inputbuf_2+edx]
 	
 	sub ah, 48 ; ASCII digits offset
 	
@@ -594,12 +594,12 @@ __itoa_init_2:
 	; We do not have to preserve as it will contain
 	; A return value
 
-	pop dword [_itoabuf]
+	pop dword [_itoabuf_2]
 
 	push ecx
 	push edx
 
-	push dword [_itoabuf]
+	push dword [_itoabuf_2]
 	
 	ret
 
@@ -662,7 +662,7 @@ __itoa_loop2_2:
 	
 	add eax, 48 ; Offset (1) as ASCII number
 	
-	mov [_itoabuf+edx], eax
+	mov [_itoabuf_2+edx], eax
 
 	sub eax, 48 ; Un-offset (1) to prepare for next step
 
@@ -683,7 +683,7 @@ __itoa_loop2_2:
 	; Return buffer array address and
 	; Pop preserved ebx as length
 
-	mov eax, _itoabuf
+	mov eax, _itoabuf_2
 	pop ebx
 
 	; Pop preserved registers and restore
@@ -759,8 +759,8 @@ _loop_3:
 
 	call __read
 	mov ebx, 0 ; Stdin
-	mov ecx, inputbuf
-	mov edx, inputbuf_len
+	mov ecx, inputbuf_3
+	mov edx, inputbuf_len_3
 	call __syscall
 
 	; Convert into integer
@@ -790,7 +790,7 @@ _loopconvert_nomul_3:
 	
 	push eax
 	
-	mov ah, [inputbuf+edx]
+	mov ah, [inputbuf_3+edx]
 	
 	sub ah, 48 ; ASCII digits offset
 	
@@ -938,12 +938,12 @@ __itoa_init_3:
 	; We do not have to preserve as it will contain
 	; A return value
 
-	pop dword [_itoabuf]
+	pop dword [_itoabuf_3]
 
 	push ecx
 	push edx
 
-	push dword [_itoabuf]
+	push dword [_itoabuf_3]
 	
 	ret
 
@@ -1006,7 +1006,7 @@ __itoa_loop2_3:
 	
 	add eax, 48 ; Offset (1) as ASCII number
 	
-	mov [_itoabuf+edx], eax
+	mov [_itoabuf_3+edx], eax
 
 	sub eax, 48 ; Un-offset (1) to prepare for next step
 
@@ -1027,7 +1027,7 @@ __itoa_loop2_3:
 	; Return buffer array address and
 	; Pop preserved ebx as length
 
-	mov eax, _itoabuf
+	mov eax, _itoabuf_3
 	pop ebx
 
 	; Pop preserved registers and restore
@@ -1227,9 +1227,18 @@ section .bss
 	inputbuf_len equ 1024
 
 ;medium level
-	; downsize_2 resw 2
+	downsize_2 resw 2
 	
-	; _itoabuf_2 resb 1024
+	_itoabuf_2 resb 1024
 
-	; inputbuf_2 resb 1024
-	; inputbuf_len_2 equ 1024
+	inputbuf_2 resb 1024
+	inputbuf_len_2 equ 1024
+
+;medium level
+	downsize_3 resw 2
+	
+	_itoabuf_3 resb 1024
+
+	inputbuf_3 resb 1024
+	inputbuf_len_3 equ 1024
+
